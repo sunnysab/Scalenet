@@ -20,9 +20,9 @@ import java.util.Objects;
  */
 public class IPNReceiver extends BroadcastReceiver {
 
-    public static final String INTENT_CONNECT_VPN = "com.tailscale.ipn.CONNECT_VPN";
-    public static final String INTENT_DISCONNECT_VPN = "com.tailscale.ipn.DISCONNECT_VPN";
-    private static final String INTENT_USE_EXIT_NODE = "com.tailscale.ipn.USE_EXIT_NODE";
+    public static final String INTENT_CONNECT_VPN = "cn.sunnysab.scalenet.CONNECT_VPN";
+    public static final String INTENT_DISCONNECT_VPN = "cn.sunnysab.scalenet.DISCONNECT_VPN";
+    private static final String INTENT_USE_EXIT_NODE = "cn.sunnysab.scalenet.USE_EXIT_NODE";
 
     // Unique work names prevent connect/disconnect flapping from enqueuing a long backlog.
     private static final String WORK_CONNECT = "ipn-connect-vpn";

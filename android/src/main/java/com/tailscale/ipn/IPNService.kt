@@ -230,9 +230,9 @@ open class IPNService : VpnService(), libtailscale.IPNService {
   }
 
   companion object {
-    const val ACTION_START_VPN = "com.tailscale.ipn.START_VPN"
-    const val ACTION_STOP_VPN = "com.tailscale.ipn.STOP_VPN"
-    const val ACTION_RESTART_VPN = "com.tailscale.ipn.RESTART_VPN"
-    const val ACTION_START_FOREGROUND_ONLY = "com.tailscale.ipn.START_FOREGROUND_ONLY"
+    const val ACTION_START_VPN = "cn.sunnysab.scalenet.START_VPN"
+    const val ACTION_STOP_VPN = "cn.sunnysab.scalenet.STOP_VPN"
+    const val ACTION_RESTART_VPN = "cn.sunnysab.scalenet.RESTART_VPN"
+    const val ACTION_START_FOREGROUND_ONLY = "cn.sunnysab.scalenet.START_FOREGROUND_ONLY"
   }
 }
