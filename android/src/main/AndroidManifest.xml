@@ -101,7 +101,7 @@
         </receiver>
 
         <receiver
-            android:name=".MDMSettingsChangedReceiver"
+            android:name=".mdm.MDMSettingsChangedReceiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.APPLICATION_RESTRICTIONS_CHANGED" />

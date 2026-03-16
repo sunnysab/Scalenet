@@ -7,8 +7,8 @@
 # keep the classes with syspolicy MDM keys, some of which
 # get used only by the Go backend. (The second rule is redundant,
 # but explicit.)
--keep class com.tailscale.ipn.** { *; }
--keep class com.tailscale.ipn.mdm.** { *; }
+-keep class cn.sunnysab.scalenet.** { *; }
+-keep class cn.sunnysab.scalenet.mdm.** { *; }
 
 # Keep specific classes from Tink library
 -keep class com.google.crypto.tink.** { *; }

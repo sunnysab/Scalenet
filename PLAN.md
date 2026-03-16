@@ -26,12 +26,12 @@
 
 - VPN 配置/建立：
   - `libtailscale/net.go`：`updateTUN` 调 `VpnService.Builder.addRoute/addDnsServer/addAddress + establish`，并把 tun FD 直接交给 wireguard-go（`tun.CreateUnmonitoredTUNFromFD`）。
-  - `android/src/main/java/com/tailscale/ipn/IPNService.kt`：`Libtailscale.requestVPN(this)` 触发 Go 侧获取 `protect()` 能力。
+  - `android/src/main/java/cn/sunnysab/scalenet/IPNService.kt`：`Libtailscale.requestVPN(this)` 触发 Go 侧获取 `protect()` 能力。
   - `libtailscale/backend.go`：`netns.SetAndroidProtectFunc` + `DebugRebind()`。
 - LocalAPI（Kotlin → Go）：
-  - `android/src/main/java/com/tailscale/ipn/ui/localapi/Client.kt` ↔ `libtailscale/localapi.go`。
+  - `android/src/main/java/cn/sunnysab/scalenet/ui/localapi/Client.kt` ↔ `libtailscale/localapi.go`。
 - DNS（用于 Tailscale 自身）：
-  - `android/src/main/java/com/tailscale/ipn/NetworkChangeCallback.kt` & `DnsConfig.java`：采集底层网络 DNS。
+  - `android/src/main/java/cn/sunnysab/scalenet/NetworkChangeCallback.kt` & `DnsConfig.java`：采集底层网络 DNS。
   - `libtailscale/net.go`：把 Go 侧生成的 DNS OSConfig 写进 VPN Builder。
 - Proxy（footprint-ffi）：
   - `footprint-ffi/include/footprint_ffi.h`：`fp_engine_*` + `fp_engine_dial_tcp_v4`（返回可读写 fd），支持 `protect` 回调。
@@ -164,4 +164,3 @@
 - UDP：按需支持 DNS 以外 UDP（或 QUIC）。
 - “route-only” FFI：在 footprint-ffi 增加 `fp_engine_route(hostname, ip)`，避免用 `dial` 做规则查询。
 - 更准确的域名信号：在可接受时增加 SNI/Host 兜底（不是当前目标）。
-

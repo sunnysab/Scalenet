@@ -450,7 +450,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
     return JNI_ERR;
   }
 
-  jclass dial_cls_local = env->FindClass("com/tailscale/ipn/proxy/FootprintNative$DialResult");
+  jclass dial_cls_local = env->FindClass("cn/sunnysab/scalenet/proxy/FootprintNative$DialResult");
   if (!dial_cls_local) {
     loge("FindClass DialResult failed");
     return JNI_ERR;
@@ -463,7 +463,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
     return JNI_ERR;
   }
 
-  jclass protector_local = env->FindClass("com/tailscale/ipn/proxy/FootprintSocketProtector");
+  jclass protector_local = env->FindClass("cn/sunnysab/scalenet/proxy/FootprintSocketProtector");
   if (!protector_local) {
     loge("FindClass FootprintSocketProtector failed");
     return JNI_ERR;
@@ -476,7 +476,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void*) {
     return JNI_ERR;
   }
 
-  jclass logger_local = env->FindClass("com/tailscale/ipn/proxy/FootprintLogSink");
+  jclass logger_local = env->FindClass("cn/sunnysab/scalenet/proxy/FootprintLogSink");
   if (!logger_local) {
     loge("FindClass FootprintLogSink failed");
     return JNI_ERR;

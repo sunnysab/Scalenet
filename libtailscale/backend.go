@@ -47,7 +47,7 @@ type App struct {
 	directFileRoot  string
 	shareFileHelper ShareFileHelper
 
-	// appCtx is a global reference to the com.tailscale.ipn.App instance.
+	// appCtx is a global reference to the cn.sunnysab.scalenet.App instance.
 	appCtx AppContext
 
 	store             *stateStore

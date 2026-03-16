@@ -81,7 +81,7 @@ android {
         kotlinCompilerExtensionVersion = "$compose_version"
     }
     flavorDimensions "version"
-    namespace 'com.tailscale.ipn'
+    namespace 'cn.sunnysab.scalenet'
 
     buildTypes {
         applicationTest {
