@@ -157,7 +157,12 @@ func (a *App) runBackend(ctx context.Context, hardwareAttestation bool) error {
 	h := localapi.NewHandler(hc)
 	h.PermitRead = true
 	h.PermitWrite = true
-	a.localAPIHandler = h
+	a.localAPIHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if a.handleScaleNetLocalAPI(w, r) {
+			return
+		}
+		h.ServeHTTP(w, r)
+	})
 
 	a.ready.Done()
 

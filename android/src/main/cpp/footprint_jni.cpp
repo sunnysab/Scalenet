@@ -238,7 +238,7 @@ static void log_cb(void* ctx, int level, const char* msg, size_t msg_len) {
 }  // namespace
 
 extern "C" JNIEXPORT jlong JNICALL
-Java_com_tailscale_ipn_proxy_FootprintNative_nativeCreateEngine(
+Java_cn_sunnysab_scalenet_proxy_FootprintNative_nativeCreateEngine(
     JNIEnv* env, jclass, jobject protector, jobject logger, jobjectArray outErr) {
   std::string err;
   if (!ensure_api_loaded(&err)) {
@@ -293,7 +293,7 @@ Java_com_tailscale_ipn_proxy_FootprintNative_nativeCreateEngine(
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_tailscale_ipn_proxy_FootprintNative_nativeFreeEngine(JNIEnv* env, jclass, jlong handle) {
+Java_cn_sunnysab_scalenet_proxy_FootprintNative_nativeFreeEngine(JNIEnv* env, jclass, jlong handle) {
   auto* h = reinterpret_cast<EngineHandle*>(handle);
   if (!h) return;
   if (h->engine) {
@@ -311,7 +311,7 @@ Java_com_tailscale_ipn_proxy_FootprintNative_nativeFreeEngine(JNIEnv* env, jclas
 }
 
 extern "C" JNIEXPORT jbyteArray JNICALL
-Java_com_tailscale_ipn_proxy_FootprintNative_nativeSetConfigToml(
+Java_cn_sunnysab_scalenet_proxy_FootprintNative_nativeSetConfigToml(
     JNIEnv* env, jclass, jlong handle, jbyteArray tomlBytes) {
   auto* h = reinterpret_cast<EngineHandle*>(handle);
   if (!h || !h->engine) {
@@ -344,7 +344,7 @@ Java_com_tailscale_ipn_proxy_FootprintNative_nativeSetConfigToml(
 }
 
 extern "C" JNIEXPORT jbyteArray JNICALL
-Java_com_tailscale_ipn_proxy_FootprintNative_nativeSetRouteProfile(
+Java_cn_sunnysab_scalenet_proxy_FootprintNative_nativeSetRouteProfile(
     JNIEnv* env, jclass, jlong handle, jstring profile) {
   auto* h = reinterpret_cast<EngineHandle*>(handle);
   if (!h || !h->engine) {
@@ -376,7 +376,7 @@ Java_com_tailscale_ipn_proxy_FootprintNative_nativeSetRouteProfile(
 }
 
 extern "C" JNIEXPORT jobject JNICALL
-Java_com_tailscale_ipn_proxy_FootprintNative_nativeDialTcpV4(
+Java_cn_sunnysab_scalenet_proxy_FootprintNative_nativeDialTcpV4(
     JNIEnv* env,
     jclass,
     jlong handle,

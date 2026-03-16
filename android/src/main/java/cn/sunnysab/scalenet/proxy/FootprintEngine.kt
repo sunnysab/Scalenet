@@ -3,8 +3,6 @@
 
 package cn.sunnysab.scalenet.proxy
 
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.atomic.AtomicLong
 
@@ -26,14 +24,14 @@ class FootprintEngine(
     }
 
     fun ipv4ToBeInt(a: Int, b: Int, c: Int, d: Int): Int {
-      return (a and 0xff shl 24) or (b and 0xff shl 16) or (c and 0xff shl 8) or (d and 0xff)
+      val be =
+          (a and 0xff shl 24) or (b and 0xff shl 16) or (c and 0xff shl 8) or (d and 0xff)
+      return Integer.reverseBytes(be)
     }
 
     fun portToBeShort(port: Int): Int {
-      val bb = ByteBuffer.allocate(2).order(ByteOrder.BIG_ENDIAN)
-      bb.putShort(port.toShort())
-      bb.flip()
-      return bb.short.toInt() and 0xffff
+      val v = port.toShort()
+      return (java.lang.Short.reverseBytes(v).toInt() and 0xffff)
     }
   }
 
@@ -103,4 +101,3 @@ class FootprintEngine(
     }
   }
 }
-

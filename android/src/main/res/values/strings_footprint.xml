@@ -3,5 +3,5 @@
     <string name="footprint_debug_create_engine">Create footprint engine</string>
     <string name="footprint_debug_set_sample_config">Set sample config</string>
     <string name="footprint_debug_dial_test">Dial test (127.0.0.1:1)</string>
+    <string name="footprint_debug_go_bridge_dial_test">Go bridge dial test (LocalAPI)</string>
 </resources>
-

@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -28,13 +29,16 @@ import cn.sunnysab.scalenet.R
 import cn.sunnysab.scalenet.proxy.FootprintEngine
 import cn.sunnysab.scalenet.proxy.FootprintLogSink
 import cn.sunnysab.scalenet.proxy.FootprintSocketProtector
+import cn.sunnysab.scalenet.ui.localapi.Request
 import cn.sunnysab.scalenet.util.TSLog
 import java.io.File
 import java.nio.charset.StandardCharsets
+import kotlin.reflect.typeOf
 
 @Composable
 fun FootprintDebugView(onBack: () -> Unit) {
   val ctx = LocalContext.current
+  val scope = rememberCoroutineScope()
   var engine by remember { mutableStateOf<FootprintEngine?>(null) }
   var status by remember { mutableStateOf("") }
   var logs by remember { mutableStateOf("") }
@@ -147,6 +151,32 @@ fun FootprintDebugView(onBack: () -> Unit) {
           },
       ) {
         Text(text = stringResource(R.string.footprint_debug_dial_test))
+      }
+
+      Button(
+          modifier = Modifier.fillMaxWidth(),
+          onClick = {
+            val path =
+                "scalenet/debug/dial-proxy-tcpv4" +
+                    "?ip=127.0.0.1&port=1" +
+                    "&hostname=not-example.com&profile=p1" +
+                    "&timeoutMs=300&flags=${FootprintEngine.FLAG_DISABLE_DEBUG_JSON}"
+            Request<String>(
+                    scope = scope,
+                    method = "GET",
+                    path = path,
+                    responseType = typeOf<String>(),
+                ) { result ->
+                  status =
+                      result.fold(
+                          onSuccess = { "go-bridge dial: ok: $it" },
+                          onFailure = { "go-bridge dial: failed: ${it.message}" },
+                      )
+                }
+                .execute()
+          },
+      ) {
+        Text(text = stringResource(R.string.footprint_debug_go_bridge_dial_test))
       }
 
       Text(text = status, style = MaterialTheme.typography.bodyMedium)
