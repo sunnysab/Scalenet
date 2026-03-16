@@ -6,12 +6,12 @@ package libtailscale
 import (
 	"encoding/binary"
 	"encoding/json"
+	"fmt"
 	"math/bits"
 	"net"
 	"net/http"
 	"strconv"
 	"strings"
-	"syscall"
 )
 
 func (a *App) handleScaleNetLocalAPI(w http.ResponseWriter, r *http.Request) bool {
@@ -30,10 +30,7 @@ func (a *App) handleScaleNetLocalAPI(w http.ResponseWriter, r *http.Request) boo
 
 type scaleNetDebugDialProxyTCPv4Response struct {
 	OK bool `json:"ok"`
-
-	FD int32 `json:"fd,omitempty"`
-
-	Closed bool `json:"closed,omitempty"`
+	ConnType string `json:"connType,omitempty"`
 }
 
 func (a *App) handleScaleNetDebugDialProxyTCPv4(w http.ResponseWriter, r *http.Request) {
@@ -41,15 +38,6 @@ func (a *App) handleScaleNetDebugDialProxyTCPv4(w http.ResponseWriter, r *http.R
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(status)
 		_ = json.NewEncoder(w).Encode(map[string]string{"error": msg})
-	}
-	writeOK := func(fd int32) {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_ = json.NewEncoder(w).Encode(scaleNetDebugDialProxyTCPv4Response{
-			OK:     true,
-			FD:     fd,
-			Closed: true,
-		})
 	}
 
 	q := r.URL.Query()
@@ -104,15 +92,18 @@ func (a *App) handleScaleNetDebugDialProxyTCPv4(w http.ResponseWriter, r *http.R
 	dstIP4Be := int32(bits.ReverseBytes32(ip4BeBytes))
 	dstPortBe := int32(bits.ReverseBytes16(uint16(port)))
 
-	fd, derr := a.appCtx.DialProxyTCPv4(dstIP4Be, dstPortBe, hostname, routeProfile, timeoutMs, flags)
+	c, derr := dialProxyTCPv4Conn(a.appCtx, dstIP4Be, dstPortBe, hostname, routeProfile, timeoutMs, flags)
 	if derr != nil {
 		writeErr(http.StatusInternalServerError, derr.Error())
 		return
 	}
 
-	if fd >= 0 {
-		_ = syscall.Close(int(fd))
-	}
-	writeOK(fd)
+	connType := fmt.Sprintf("%T", c)
+	_ = c.Close() // debug endpoint: close immediately
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_ = json.NewEncoder(w).Encode(scaleNetDebugDialProxyTCPv4Response{
+		OK:       true,
+		ConnType: connType,
+	})
 }
-
