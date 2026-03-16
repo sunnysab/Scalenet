@@ -141,6 +141,12 @@ class App : UninitializedApp(), libtailscale.AppContext, ViewModelStoreOwner {
     activeVpnService = service
   }
 
+  internal fun protectSocketFd(fd: Int): Int {
+    val svc = activeVpnService
+    if (svc == null) return 0
+    return if (svc.protect(fd)) 0 else -1
+  }
+
   internal fun setFootprintConfigTomlAndProfile(toml: String, routeProfile: String) {
     synchronized(footprintLock) {
       footprintConfigToml = toml

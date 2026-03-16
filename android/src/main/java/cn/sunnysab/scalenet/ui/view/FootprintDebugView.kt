@@ -4,6 +4,7 @@
 package cn.sunnysab.scalenet.ui.view
 
 import android.content.Context
+import android.os.ParcelFileDescriptor
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -49,10 +50,7 @@ fun FootprintDebugView(onBack: () -> Unit) {
   }
 
   val protector =
-      FootprintSocketProtector { _ ->
-        // Smoke test only. Full-tunnel mode must provide a real VpnService.protect(fd).
-        0
-      }
+      FootprintSocketProtector { fd -> App.get().protectSocketFd(fd) }
   val logSink =
       FootprintLogSink { level, msgUtf8 ->
         val msg = msgUtf8.toString(StandardCharsets.UTF_8)
@@ -145,6 +143,9 @@ fun FootprintDebugView(onBack: () -> Unit) {
                   )
               status =
                   "dial: fd=${res.fd} action=${res.action} err=${res.errCode} msg=${res.errMsg}"
+              if (res.fd >= 0) {
+                runCatching { ParcelFileDescriptor.adoptFd(res.fd).close() }
+              }
             } catch (t: Throwable) {
               status = "dial: failed: ${t.message}"
             }
