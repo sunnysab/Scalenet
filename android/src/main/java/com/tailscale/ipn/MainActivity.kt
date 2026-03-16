@@ -68,6 +68,7 @@ import com.tailscale.ipn.ui.view.AboutView
 import com.tailscale.ipn.ui.view.BugReportView
 import com.tailscale.ipn.ui.view.DNSSettingsView
 import com.tailscale.ipn.ui.view.ExitNodePicker
+import com.tailscale.ipn.ui.view.FootprintDebugView
 import com.tailscale.ipn.ui.view.HealthView
 import com.tailscale.ipn.ui.view.IntroView
 import com.tailscale.ipn.ui.view.LoginQRView
@@ -307,6 +308,9 @@ class MainActivity : ComponentActivity() {
                           onNavigateToTailnetLock = { navController.navigate("tailnetLock") },
                           onNavigateToSubnetRouting = { navController.navigate("subnetRouting") },
                           onNavigateToMDMSettings = { navController.navigate("mdmSettings") },
+                          onNavigateToFootprintDebug = {
+                            navController.navigate("footprintDebug")
+                          },
                           onNavigateToManagedBy = { navController.navigate("managedBy") },
                           onNavigateToUserSwitcher = { navController.navigate("userSwitcher") },
                           onNavigateToPermissions = { navController.navigate("permissions") },
@@ -377,6 +381,7 @@ class MainActivity : ComponentActivity() {
                   composable("subnetRouting") { SubnetRoutingView(backTo("settings")) }
                   composable("about") { AboutView(backTo("settings")) }
                   composable("mdmSettings") { MDMSettingsDebugView(backTo("settings")) }
+                  composable("footprintDebug") { FootprintDebugView(backTo("settings")) }
                   composable("managedBy") { ManagedByView(backTo("settings")) }
                   composable("userSwitcher") { UserSwitcherView(userSwitcherNav) }
                   composable("permissions") {

@@ -132,6 +132,8 @@ fun SettingsView(
             Lists.SectionDivider()
             Lists.MutedHeader(text = stringResource(R.string.internal_debug_options))
             Setting.Text(R.string.mdm_settings, onClick = settingsNav.onNavigateToMDMSettings)
+            Lists.ItemDivider()
+            Setting.Text(R.string.footprint_debug, onClick = settingsNav.onNavigateToFootprintDebug)
           }
         }
       }
@@ -219,5 +221,5 @@ fun SettingsPreview() {
   vm.tailNetLockEnabled.set(true)
   vm.isAdmin.set(true)
   vm.managedByOrganization.set("Tails and Scales Inc.")
-  SettingsView(SettingsNav({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}), vm)
+  SettingsView(SettingsNav({}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}), vm)
 }

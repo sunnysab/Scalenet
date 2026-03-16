@@ -10,6 +10,7 @@ android_legacy/libs
 
 # Ignore ABI
 android/src/main/jniLibs/*
+!android/src/main/jniLibs/README.md
 
 # Android Studio files
 android_legacy/.idea

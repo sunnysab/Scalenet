@@ -20,6 +20,7 @@ data class SettingsNav(
     val onNavigateToTailnetLock: () -> Unit,
     val onNavigateToSubnetRouting: () -> Unit,
     val onNavigateToMDMSettings: () -> Unit,
+    val onNavigateToFootprintDebug: () -> Unit,
     val onNavigateToManagedBy: () -> Unit,
     val onNavigateToUserSwitcher: () -> Unit,
     val onNavigateToPermissions: () -> Unit,

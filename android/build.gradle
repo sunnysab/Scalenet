@@ -48,6 +48,12 @@ android {
         // Set it to false either here or in your local.properties file to
         // disable this behaviour.
         buildConfigField "boolean", "USE_GOOGLE_DNS_FALLBACK", getLocalProperty("tailscale.useGoogleDnsFallback", "true")
+
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++17"
+            }
+        }
     }
 
     compileOptions {
@@ -105,6 +111,12 @@ android {
     }
 
     testBuildType "applicationTest"
+
+    externalNativeBuild {
+        cmake {
+            path file("src/main/cpp/CMakeLists.txt")
+        }
+    }
 }
 
 dependencies {
