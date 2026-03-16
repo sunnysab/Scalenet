@@ -56,6 +56,14 @@ type AppContext interface {
 	// configuration.
 	GetPlatformDNSConfig() string
 
+	// DialProxyTCPv4 asks the Android side to establish a TCP/IPv4 connection and
+	// returns a file descriptor for the connected socket. Implementations must
+	// ensure the socket is protected (VpnService.protect) when a VPN is active.
+	//
+	// dstIP4Be and dstPortBe are in network byte order (big-endian) as signed
+	// int32 values for gomobile compatibility.
+	DialProxyTCPv4(dstIP4Be, dstPortBe int32, hostname, routeProfile string, timeoutMs, flags int32) (int32, error)
+
 	// GetSyspolicyStringValue returns the current string value for the given system policy.
 	GetSyspolicyStringValue(key string) (string, error)
 

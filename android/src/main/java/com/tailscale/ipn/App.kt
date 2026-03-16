@@ -14,6 +14,7 @@ import android.content.RestrictionsManager
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
+import android.net.VpnService
 import android.net.Uri
 import android.os.Build
 import android.util.Log
@@ -35,6 +36,9 @@ import com.tailscale.ipn.ui.notifier.HealthNotifier
 import com.tailscale.ipn.ui.notifier.Notifier
 import com.tailscale.ipn.ui.viewModel.AppViewModel
 import com.tailscale.ipn.ui.viewModel.AppViewModelFactory
+import com.tailscale.ipn.proxy.FootprintEngine
+import com.tailscale.ipn.proxy.FootprintLogSink
+import com.tailscale.ipn.proxy.FootprintSocketProtector
 import com.tailscale.ipn.util.FeatureFlags
 import com.tailscale.ipn.util.HardwareKeyStore
 import com.tailscale.ipn.util.NoSuchKeyException
@@ -43,6 +47,7 @@ import com.tailscale.ipn.util.TSLog
 import java.io.IOException
 import java.lang.UnsupportedOperationException
 import java.net.NetworkInterface
+import java.nio.charset.StandardCharsets
 import java.security.GeneralSecurityException
 import java.util.Collections
 import java.util.Locale
@@ -89,6 +94,13 @@ class App : UninitializedApp(), libtailscale.AppContext, ViewModelStoreOwner {
   private val appViewModelStore: ViewModelStore by lazy { ViewModelStore() }
   var healthNotifier: HealthNotifier? = null
 
+  @Volatile private var activeVpnService: VpnService? = null
+
+  private val footprintLock = Any()
+  @Volatile private var footprintEngine: FootprintEngine? = null
+  @Volatile private var footprintConfigToml: String? = null
+  @Volatile private var footprintRouteProfile: String = "default"
+
   override fun getPlatformDNSConfig(): String = dns.dnsConfigAsString
 
   override fun getInstallSource(): String = AppSourceChecker.getInstallSource(this)
@@ -97,6 +109,107 @@ class App : UninitializedApp(), libtailscale.AppContext, ViewModelStoreOwner {
 
   override fun log(s: String, s1: String) {
     Log.d(s, s1)
+  }
+
+  @Throws(IOException::class)
+  override fun dialProxyTCPv4(
+      dstIP4Be: Int,
+      dstPortBe: Int,
+      hostname: String?,
+      routeProfile: String?,
+      timeoutMs: Int,
+      flags: Int,
+  ): Int {
+    val engine = getOrCreateFootprintEngine()
+    val profile = routeProfile?.takeIf { it.isNotBlank() } ?: footprintRouteProfile
+    val host = hostname?.takeIf { it.isNotBlank() }
+    val res =
+        engine.dialTcpV4(
+            dstIp4Be = dstIP4Be,
+            dstPortBe = dstPortBe,
+            hostname = host,
+            routeProfile = profile,
+            timeoutMs = timeoutMs,
+            flags = flags,
+        )
+    if (res.fd >= 0 && res.errCode == 0) return res.fd
+    val msg = res.errMsg ?: "unknown error"
+    throw IOException("footprint dial failed: code=${res.errCode} msg=$msg")
+  }
+
+  internal fun setActiveVpnService(service: VpnService?) {
+    activeVpnService = service
+  }
+
+  internal fun setFootprintConfigTomlAndProfile(toml: String, routeProfile: String) {
+    synchronized(footprintLock) {
+      footprintConfigToml = toml
+      footprintRouteProfile = routeProfile
+      val e = footprintEngine
+      if (e != null) {
+        e.setConfigToml(toml)
+        e.setRouteProfile(routeProfile)
+      }
+    }
+  }
+
+  private fun defaultFootprintToml(): String {
+    return """
+      inbounds = []
+
+      [[route_profiles]]
+      id = "default"
+      rules = []
+      fallback = "direct"
+
+      [[sources]]
+      id = "s1"
+      priority = 1
+      type = "inline"
+      nodes = []
+
+      [[proxy_chains]]
+      id = "main"
+      members = ["s1"]
+      """.trimIndent()
+  }
+
+  private fun getOrCreateFootprintEngine(): FootprintEngine {
+    synchronized(footprintLock) {
+      footprintEngine?.let {
+        return it
+      }
+
+      val protector =
+          FootprintSocketProtector { fd ->
+            val svc = activeVpnService
+            if (svc == null) {
+              0
+            } else if (svc.protect(fd)) {
+              0
+            } else {
+              -1
+            }
+          }
+      val logSink =
+          FootprintLogSink { level, msgUtf8 ->
+            val msg = msgUtf8.toString(StandardCharsets.UTF_8)
+            Log.d("Footprint", "[L$level] $msg")
+          }
+
+      val engine = FootprintEngine(protector = protector, logger = logSink)
+      val toml = footprintConfigToml ?: defaultFootprintToml()
+      val profile = footprintRouteProfile
+      try {
+        engine.setConfigToml(toml)
+        engine.setRouteProfile(profile)
+      } catch (t: Throwable) {
+        engine.close()
+        throw t
+      }
+      footprintEngine = engine
+      return engine
+    }
   }
 
   fun getLibtailscaleApp(): libtailscale.Application {

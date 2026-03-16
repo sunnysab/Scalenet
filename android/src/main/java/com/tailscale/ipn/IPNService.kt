@@ -38,6 +38,7 @@ open class IPNService : VpnService(), libtailscale.IPNService {
     super.onCreate()
     // grab app to make sure it initializes
     app = App.get()
+    app.setActiveVpnService(this)
   }
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int =
@@ -111,6 +112,7 @@ open class IPNService : VpnService(), libtailscale.IPNService {
   override fun onDestroy() {
     close()
     updateVpnStatus(false)
+    app.setActiveVpnService(null)
     super.onDestroy()
   }
 

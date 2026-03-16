@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.tailscale.ipn.App
 import com.tailscale.ipn.R
 import com.tailscale.ipn.proxy.FootprintEngine
 import com.tailscale.ipn.proxy.FootprintLogSink
@@ -112,6 +113,7 @@ fun FootprintDebugView(onBack: () -> Unit) {
                   """.trimIndent()
               e.setConfigToml(toml)
               e.setRouteProfile("p1")
+              App.get().setFootprintConfigTomlAndProfile(toml, "p1")
               status = "config: set ok (${rulePath.absolutePath})"
             } catch (t: Throwable) {
               status = "config: set failed: ${t.message}"
@@ -166,4 +168,3 @@ private fun writeTempRuleFile(ctx: Context, content: String): File {
   TSLog.d("FootprintDebug", "Wrote temp rule file: ${f.absolutePath}")
   return f
 }
-
